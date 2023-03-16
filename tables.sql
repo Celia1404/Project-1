@@ -1,87 +1,68 @@
 --CREATE 6 TABLES
-DROP TABLE IF CASCADE faculties;
-DROP TABLE IF CASCADE programs;
-DROP TABLE IF CASCADE courses;
-DROP TABLE IF CASCADE instructors;
-DROP TABLE IF CASCADE offerings;
-DROP TABLE IF CASCADE enrollments;
+DROP TABLE faculties CASCADE;
+DROP TABLE programs CASCADE;
+DROP TABLE courses CASCADE;
+DROP TABLE instructors CASCADE;
+DROP TABLE courses_programs CASCADE;
+DROP TABLE pre_requisites CASCADE;
 
 
-CREATE TABLE faculties(
-
-  faculty_id VARCHAR (4) PRIMARY KEY,
-  faculty_name VARCHAR (100) NOT NULL,
-  faculty_description TEXT NOT NULL
-
-  );
-  
-CREATE TABLE programs(
-
-  program_id CHAR(4) PRIMARY KEY,
-  faculty_id VARCHAR(4),
-  program_name VARCHAR(50) NOT NULL,
-  program_location VARCHAR (50),
-  program_description TEXT NOT NULL,
-  FOREIGN KEY(faculty_id)
-  REFERENCES faculties(faculty_id)
-
-);
-
-CREATE TABLE courses(
-
-  course_id INT PRIMARY KEY,
-  code CHAR (8) NOT NULL,
-  year INT NOT NULL,
-  semester INT NOT NULL,
-  section VARCHAR (10) NOT NULL,
-  title VARCHAR (100) NOT NULL,
-  credits INT NOT NULL,
-  modality VARCHAR (50) NOT NULL,
-  modality_type VARCHAR (20) NOT NULL,
-  instructor_id  INT NOT NULL,
-  class_venue VARCHAR (100),
-  communication_tool VARCHAR (25),
-  course_platform VARCHAR (25),
-  field_trips VARCHAR (3) check(field_trips in ('Yes','No')),
-  resources_required TEXT NOT NULL,
-  resources_recommended TEXT NOT NULL,
-  resources_other TEXT NOT NULL,
-  description TEXT NOT NULL,
-  outline_url TEXT NOT NULL,
-  UNIQUE (code,year,semester,section),
-  FOREIGN KEY (instructor_id)
-  REFERENCES instructors (instructor_id)
+CREATE TABLE faculties (
+  faculty_id varchar(10) NOT NULL,
+  faculty_name varchar(50) NOT NULL,
+  campus VARCHAR(50),
+  faculty_description varchar
   
 );
 
-CREATE TABLE courses_programs(
-
-  course_id INT NOT NULL,
-  program_id CHAR(4) NOT NULL,
-  REFERENCES programs(program_id),
-   FOREIGN KEY (course_id)
-  REFERENCES courses(course_id)
-  
+CREATE TABLE programs (
+  program_id varchar(10) NOT NULL PRIMARY KEY,
+  faculty_id varchar(10) NOT NULL,
+  program_name varchar(100) NOT NULL,
+  program_location varchar(50),
+  program_description text
 );
 
-CREATE TABLE instructors(
-
-  instructor_id INT PRIMARY KEY,
-  emial VARCHAR (50),
-  instructor_name VARCHAR (50),
-  office_location VARCHAR(50),
-  telephone CHAR (20),
-  degree VARCHAR (8)
-  
+CREATE TABLE courses (
+  id varchar(10) NOT NULL,
+  code varchar(10) NOT NULL,
+  year integer NOT NULL,
+  semester varchar(10) NOT NULL,
+  section varchar(10) NOT NULL,
+  title varchar NOT NULL,
+  credits integer NOT NULL,
+  modality varchar NOT NULL,
+  modality_type varchar,
+  instructor_id varchar NOT NULL,
+  class_venue varchar,
+  communication_tool varchar,
+  course_platform varchar,
+  field_trips varchar,
+  resources_required varchar,
+  resources_recommended varchar,
+  resources_other varchar,
+  course_description varchar,
+  course_outline_url varchar
 );
 
-CREATE TABLE pre_requisities(
+CREATE TABLE instructors (
+  instructor_id varchar(10) NOT NULL,
+  instructor_email varchar(100) UNIQUE NOT NULL,
+  instructor_name varchar(100) NOT NULL,
+  office_location varchar(50),
+  telephone varchar(20),
+  degree varchar(50)
+);
 
-  course_id INT NOT NULL,
-  prereq_id VARCHAR (8) NOT NULL,
-  FOREIGN KEY (course_id)
-  REFERENCES courses (course_id)
+CREATE TABLE courses_programs ( 
+  program_id varchar(10) NOT NULL,
+  course_id varchar(10) NOT NULL
+);
 
+
+CREATE TABLE pre_requisites (
+  course_code varchar,
+  pre_requisites varchar
 );
 
 COPY faculties
@@ -140,12 +121,12 @@ WHERE instructors.instructor_name = 'Vernelle Sylvester';
 --
 
 
-SELECT instructor_name FROM instructors WHERE degree LIKE '%Masters';
-
+SELECT instructor_name 
+FROM instructors 
+WHERE degree LIKE '%Masters';
 --
+
 SELECT courses.course_name AS course_name, pre_requisites.course_name AS prerequisite 
 FROM courses 
 LEFT JOIN courses  ON courses.prerequisite_course_id = pre_requisites.course_id
 WHERE courses.course_code = 'CSC212';
---
-
